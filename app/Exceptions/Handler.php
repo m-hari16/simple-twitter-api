@@ -4,6 +4,9 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Http\Builder\ResponseBuilder;
+use Illuminate\Support\Facades\Log;
 
 class Handler extends ExceptionHandler
 {
@@ -36,6 +39,20 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (Throwable $exception) {
+            if ( $exception instanceof NotFoundHttpException ) {
+                return response()->json(ResponseBuilder::build(404, false, "Not found"),
+                404);
+            }
+
+            Log::error($exception);
+            return response()->json(
+                ResponseBuilder::build(500, false, 'Please contact your developer'), 
+                500
+            );
+
         });
     }
 }
