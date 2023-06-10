@@ -34,7 +34,11 @@ class TweetController extends Controller
 
     public function listTweet()
     {
+        $user = auth()->user();
+        $tweet = Tweet::where('user_id', $user->id)->get();
 
+        return response()->json(ResponseBuilder::build(200, true, "Ok", TweetDataResponse::collection($tweet)), 200);
+        
     }
 
     public function deleteTweet(Request $req)
