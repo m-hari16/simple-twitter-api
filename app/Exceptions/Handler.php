@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Auth\AuthenticationException;
 use App\Http\Builder\ResponseBuilder;
 use Illuminate\Support\Facades\Log;
 
@@ -45,6 +46,11 @@ class Handler extends ExceptionHandler
             if ( $exception instanceof NotFoundHttpException ) {
                 return response()->json(ResponseBuilder::build(404, false, "Not found"),
                 404);
+            }
+
+            if ( $exception instanceof AuthenticationException ) {
+                return response()->json(ResponseBuilder::build('401', false, "Unauthorized"),
+                401);
             }
 
             Log::error($exception);

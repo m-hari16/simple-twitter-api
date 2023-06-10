@@ -17,7 +17,7 @@ Route::group(["middleware" => "apiKey"], function(){
     Route::get("/login/google", "AuthController@loginGoogle");
 });
 
-Route::group(["middleware" => "auth"], function(){
+Route::group(["middleware" => "auth:sanctum"], function(){
     Route::post("/tweet", "TweetController@addTweet");
     Route::get("/tweet", "TweetController@listTweet");
     Route::delete("/tweet/{tweet_id}", "TweetController@deleteTweet");
