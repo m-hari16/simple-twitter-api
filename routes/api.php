@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(["middleware" => "apiKey"], function(){
+    Route::get("/login/google", "AuthController@loginGoogle");
 });
+
+Route::group(["middleware" => "auth"], function(){
+    Route::post("/tweet", "TweetController@addTweet");
+    Route::get("/tweet", "TweetController@listTweet");
+    Route::delete("/tweet/{tweet_id}", "TweetController@deleteTweet");
+    Route::post("/logout", "AuthController@logout");
+});
+
+Route::group(["middleware" => "web"], function(){
+    Route::get("/callback/google", "AuthController@callbackGoogle");
+});
+
