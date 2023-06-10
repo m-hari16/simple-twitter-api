@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Builder\ResponseBuilder;
 use App\Http\Requests\CreateTweetRequest;
 use App\Http\Resources\TweetDataResponse;
-use Illuminate\Http\Request;
+use App\Http\Traits\MediaServiceTrait;
 use App\Models\Tweet;
 
 class TweetController extends Controller
 {
+    use MediaServiceTrait;
+
     public function addTweet(CreateTweetRequest $req)
     {
         $user = auth()->user();
@@ -20,9 +23,7 @@ class TweetController extends Controller
         ];
 
         if ($req->hasFile('attachFile')) {
-            $image = $req->file('attachFile');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('attachedFile'), $imageName);
+            $imageName = $this->uploadFile($req->file('attachFile'), 'attachedFile');
             $requestData['fileName'] = $imageName;
         }
         
@@ -35,7 +36,7 @@ class TweetController extends Controller
     public function listTweet()
     {
         $user = auth()->user();
-        $tweet = Tweet::where('user_id', $user->id)->get();
+        $tweet = Tweet::where('user_id', $user->id)->orderBy('id', 'desc')->get();
 
         return response()->json(ResponseBuilder::build(200, true, "Ok", TweetDataResponse::collection($tweet)), 200);
         

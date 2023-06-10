@@ -2,10 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Traits\MediaServiceTrait;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TweetDataResponse extends JsonResource
 {
+    use MediaServiceTrait;
+
     /**
      * Transform the resource into an array.
      *
@@ -17,7 +20,7 @@ class TweetDataResponse extends JsonResource
         return [
             "tweet_id" => encrypt($this->id),
             "content" => $this->content,
-            "attachFileUrl" => $this->fileName ?? "",
+            "attachFileUrl" => isset($this->fileName) ? $this->urlGenerator('attachedFile', $this->fileName) : "",
             "createdAt" => $this->created_at
         ];
     }
