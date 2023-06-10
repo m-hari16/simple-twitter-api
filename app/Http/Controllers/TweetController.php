@@ -43,6 +43,20 @@ class TweetController extends Controller
 
     public function deleteTweet(Request $req)
     {
+        $user = auth()->user();
+        $tweet = Tweet::where('id', decrypt($req->tweet_id))->first();
+
+        if(!$tweet){
+            return response()->json(ResponseBuilder::build(404, false, "Data not found"), 404);
+        }
+
+        if($tweet->user_id != $user->id){
+            return response()->json(ResponseBuilder::build(403, false, "Forbidden access"), 403);
+        }
+
+        $tweet->delete();
+
+        return response()->json(ResponseBuilder::build(201, true, "Data deleted successfully", new TweetDataResponse($tweet)), 201);
         
     }
 }
